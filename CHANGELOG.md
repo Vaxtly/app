@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-05-08
+
+### Added
+- Parent/child environments — an env can inherit from a parent so children override only what differs (e.g. one root env with `local` and `prod` children sharing common values)
+- "Inherits from" picker in the environment editor; sidebar renders children indented under their parent
+- "Used by" pills on root envs link to each child; children's editor shows an "Inherited from {parent}" table with per-row Override action
+- Vault-aware inheritance — activating a child whose parent is vault-synced fetches both ends of the chain and reports per-env failures
+
+### Changed
+- Variable resolution merges parent → child → collection; disabled child entries are ignored, so the parent value applies (override with an explicit value to suppress)
+- Mirror-back from post-response scripts walks active → parent and writes to the first env that already defines the key
+- Deleting a parent orphans its children (they remain as their own root envs with values intact)
+
 ## [0.9.0] - 2026-04-16
 
 ### Added
