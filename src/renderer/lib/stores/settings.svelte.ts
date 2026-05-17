@@ -14,6 +14,7 @@ export interface SettingsMap {
   'app.welcomed': boolean
   'app.last_seen_version': string
   'app.theme': 'dark' | 'light' | 'system'
+  'app.text_size': 'sm' | 'md' | 'lg'
   'sidebar.width': number
   'request.splitPercent': number
   'mcp.splitPercent': number
@@ -40,6 +41,7 @@ const defaults: SettingsMap = {
   'app.welcomed': false,
   'app.last_seen_version': '',
   'app.theme': 'dark',
+  'app.text_size': 'md',
   'sidebar.width': 244,
   'request.splitPercent': 50,
   'mcp.splitPercent': 50,

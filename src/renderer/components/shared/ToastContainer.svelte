@@ -180,7 +180,7 @@
   }
 
   .toast-label {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 600;
     letter-spacing: 0.01em;
     margin-bottom: 3px;
@@ -190,7 +190,7 @@
   .toast-label--update { color: var(--color-brand-400); }
 
   .toast-message {
-    font-size: 12.5px;
+    font-size: calc(12.5px + var(--ui-bump));
     color: var(--color-surface-300);
     line-height: 1.45;
     word-break: break-word;

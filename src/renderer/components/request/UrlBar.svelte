@@ -335,7 +335,7 @@
     border: none;
     background: transparent;
     color: var(--color-surface-100);
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-family: var(--font-mono);
     font-feature-settings: var(--font-feature-mono);
     outline: none;

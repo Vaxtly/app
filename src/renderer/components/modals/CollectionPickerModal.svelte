@@ -99,7 +99,7 @@
     border-radius: 6px;
     background: var(--color-surface-800);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: border-color 0.12s;
@@ -118,7 +118,7 @@
   }
 
   .cp-empty {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     color: var(--color-surface-500);
     text-align: center;
     padding: 12px 0;
@@ -134,7 +134,7 @@
     border-radius: 8px;
     background: transparent;
     color: var(--color-surface-200);
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-family: inherit;
     cursor: pointer;
     transition: background 0.12s;
@@ -178,7 +178,7 @@
     border-radius: 6px;
     background: var(--color-surface-800);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: border-color 0.12s;
@@ -195,7 +195,7 @@
     border-radius: 6px;
     background: var(--color-brand-600);
     color: white;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;

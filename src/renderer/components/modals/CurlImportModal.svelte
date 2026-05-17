@@ -84,7 +84,7 @@
   .curl-tag {
     padding: 1px 6px;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-400);
     background: var(--tint-muted);

@@ -517,7 +517,7 @@
     padding: 8px 10px;
     border-radius: 8px;
     border: 1px solid;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     line-height: 1.4;
     text-align: left;
     cursor: pointer;
@@ -551,7 +551,7 @@
     border: 1px solid color-mix(in srgb, var(--color-info) 20%, transparent);
     background: color-mix(in srgb, var(--color-info) 6%, transparent);
     color: var(--color-info-muted);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     line-height: 1.4;
     animation: slideIn 0.2s ease-out;
   }
@@ -592,13 +592,13 @@
     color: var(--color-brand-300);
   }
   .section-title {
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
     line-height: 1.2;
   }
   .section-subtitle {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.3;
   }
@@ -618,12 +618,12 @@
     gap: 1px;
   }
   .setting-label {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
   }
   .setting-desc {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
   }
 
@@ -637,7 +637,7 @@
   }
   .auth-option {
     padding: 5px 12px;
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-400);
     background: transparent;
@@ -669,12 +669,12 @@
     gap: 10px;
   }
   .field-label {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
   }
   .field-hint {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.3;
   }
@@ -686,7 +686,7 @@
     border: 1px solid var(--border-subtle);
     background: var(--tint-muted);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     outline: none;
     transition: border-color 0.12s;
   }
@@ -715,7 +715,7 @@
     gap: 5px;
     padding: 6px 12px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     cursor: pointer;
     transition: all 0.12s ease;

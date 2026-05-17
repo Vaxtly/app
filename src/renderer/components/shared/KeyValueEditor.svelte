@@ -174,7 +174,7 @@
     transform: translateY(-50%);
     z-index: 1;
     padding: 0 4px;
-    font-size: 9px;
+    font-size: calc(9px + var(--ui-bump));
     font-weight: 600;
     color: var(--color-brand-400);
     background: color-mix(in srgb, var(--color-brand-500) 12%, transparent);
@@ -202,7 +202,7 @@
     border-left: 1px solid var(--border-subtle);
     background: transparent;
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: background 0.12s;
@@ -219,7 +219,7 @@
 
   :global(.kv-input--desc) {
     color: var(--color-surface-400);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
   }
 
   .kv-bulk-textarea {
@@ -229,7 +229,7 @@
     border: none;
     background: transparent;
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: var(--font-mono, monospace);
     font-feature-settings: var(--font-feature-mono);
     line-height: 1.6;

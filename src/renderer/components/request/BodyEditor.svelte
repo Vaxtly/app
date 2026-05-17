@@ -464,7 +464,7 @@
     border-left: 1px solid var(--border-subtle);
     background: transparent;
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: background 0.12s;
@@ -481,7 +481,7 @@
     border: none;
     background: transparent;
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: var(--font-mono, monospace);
     font-feature-settings: var(--font-feature-mono);
     line-height: 1.6;

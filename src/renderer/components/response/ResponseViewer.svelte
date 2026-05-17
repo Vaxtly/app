@@ -272,7 +272,7 @@
     border-radius: 4px;
     background: color-mix(in srgb, var(--color-surface-700) 60%, transparent);
     border: 1px solid var(--color-surface-600);
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-family: inherit;
     color: var(--color-surface-300);
     line-height: 1.4;

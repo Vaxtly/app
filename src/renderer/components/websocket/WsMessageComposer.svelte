@@ -121,6 +121,6 @@
     background: transparent;
   }
   .composer-editor :global(.cm-scroller) {
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
   }
 </style>

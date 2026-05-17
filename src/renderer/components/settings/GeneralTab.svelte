@@ -3,6 +3,7 @@
   import Toggle from '../shared/Toggle.svelte'
 
   let theme = $derived(settingsStore.get('app.theme'))
+  let textSize = $derived(settingsStore.get('app.text_size'))
   let layout = $derived(settingsStore.get('request.layout'))
   let timeout = $derived(settingsStore.get('request.timeout'))
   let verifySsl = $derived(settingsStore.get('request.verify_ssl'))
@@ -47,6 +48,10 @@
 
   function handleThemeChange(value: 'dark' | 'light' | 'system'): void {
     settingsStore.set('app.theme', value)
+  }
+
+  function handleTextSizeChange(value: 'sm' | 'md' | 'lg'): void {
+    settingsStore.set('app.text_size', value)
   }
 
   function handleLayoutChange(value: 'rows' | 'columns'): void {
@@ -144,11 +149,11 @@
       </div>
       <div>
         <div class="section-title">Appearance</div>
-        <div class="section-subtitle">Color theme for the interface</div>
+        <div class="section-subtitle">Color theme and text size for the interface</div>
       </div>
     </div>
 
-    <div class="setting-row last">
+    <div class="setting-row">
       <div class="setting-info">
         <span class="setting-label">Theme</span>
         <span class="setting-desc">Choose light, dark, or follow your system</span>
@@ -186,6 +191,33 @@
             <path d="M7 16h6M10 13v3"/>
           </svg>
         </button>
+      </div>
+    </div>
+
+    <div class="setting-row last">
+      <div class="setting-info">
+        <span class="setting-label">Text size</span>
+        <span class="setting-desc">Adjusts the interface font scale</span>
+      </div>
+      <div class="text-size-picker">
+        <button
+          class="text-size-option text-size-option--sm"
+          class:is-active={textSize === 'sm'}
+          onclick={() => handleTextSizeChange('sm')}
+          title="Small"
+        >A</button>
+        <button
+          class="text-size-option text-size-option--md"
+          class:is-active={textSize === 'md'}
+          onclick={() => handleTextSizeChange('md')}
+          title="Medium"
+        >A</button>
+        <button
+          class="text-size-option text-size-option--lg"
+          class:is-active={textSize === 'lg'}
+          onclick={() => handleTextSizeChange('lg')}
+          title="Large"
+        >A</button>
       </div>
     </div>
   </section>
@@ -583,13 +615,13 @@
     transform: rotate(0deg);
   }
   .section-title {
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
     line-height: 1.2;
   }
   .section-subtitle {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.3;
   }
@@ -611,12 +643,12 @@
     gap: 1px;
   }
   .setting-label {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
   }
   .setting-desc {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
   }
 
@@ -686,6 +718,42 @@
     height: 16px;
   }
 
+  /* Text size picker */
+  .text-size-picker {
+    display: flex;
+    gap: 4px;
+  }
+  .text-size-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--color-surface-500);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .text-size-option:hover {
+    border-color: var(--glass-border);
+    background: var(--tint-subtle);
+    color: var(--color-surface-300);
+  }
+  .text-size-option.is-active {
+    border-color: color-mix(in srgb, var(--color-brand-500) 50%, transparent);
+    background: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
+    color: var(--color-brand-400);
+  }
+  /* Pinned to fixed sizes so the picker is a stable reference, not affected by --ui-bump. */
+  .text-size-option--sm { font-size: 11px; }
+  .text-size-option--md { font-size: 14px; }
+  .text-size-option--lg { font-size: 17px; }
+
   /* Inputs */
   .timeout-input {
     display: flex;
@@ -700,7 +768,7 @@
     border: 1px solid var(--border-subtle);
     background: var(--tint-muted);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     text-align: right;
     outline: none;
     transition: border-color 0.12s;
@@ -715,7 +783,7 @@
     border-color: var(--color-brand-500);
   }
   .input-suffix {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
   }
   /* Certificates */
@@ -726,7 +794,7 @@
     flex-shrink: 0;
   }
   .cert-filename {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-family: var(--font-mono, monospace);
     color: var(--color-surface-300);
     max-width: 140px;
@@ -744,7 +812,7 @@
     border: 1px solid var(--border-subtle);
     background: var(--tint-muted);
     color: var(--color-surface-300);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     cursor: pointer;
     transition: all 0.12s ease;
   }
@@ -784,7 +852,7 @@
     border: 1px solid color-mix(in srgb, var(--color-danger-light) 30%, transparent);
     background: transparent;
     color: var(--color-danger-light);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     cursor: pointer;
     transition: all 0.12s ease;
   }
@@ -799,7 +867,7 @@
     border: 1px solid var(--border-subtle);
     background: var(--tint-muted);
     color: var(--color-surface-100);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     outline: none;
     transition: border-color 0.12s;
   }
@@ -821,7 +889,7 @@
     border: 1px solid var(--border-subtle);
     background: var(--tint-muted);
     color: var(--color-surface-100);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     outline: none;
     transition: border-color 0.12s;
   }
@@ -872,12 +940,12 @@
     gap: 1px;
   }
   .about-name {
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-weight: 600;
     color: var(--color-surface-200);
   }
   .about-version {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
   }
   .about-actions {
@@ -890,7 +958,7 @@
     border: 1px solid var(--glass-border);
     background: var(--tint-muted);
     color: var(--color-surface-200);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     cursor: pointer;
     transition: all 0.12s ease;
   }
@@ -899,7 +967,7 @@
     background: var(--tint-active);
   }
   .update-status {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-400);
   }
   .update-found {

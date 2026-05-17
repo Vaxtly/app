@@ -420,7 +420,7 @@
     padding: 8px 10px;
     border-radius: 8px;
     border: 1px solid;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     line-height: 1.4;
     text-align: left;
     cursor: pointer;
@@ -496,13 +496,13 @@
     color: var(--color-purple);
   }
   .section-title {
-    font-size: 13px;
+    font-size: calc(13px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
     line-height: 1.2;
   }
   .section-subtitle {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.3;
   }
@@ -534,7 +534,7 @@
     background: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
   }
   .export-option-label {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
   }
@@ -542,7 +542,7 @@
     color: var(--color-brand-300);
   }
   .export-option-desc {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.3;
   }
@@ -602,12 +602,12 @@
     gap: 2px;
   }
   .drop-zone-primary {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     color: var(--color-surface-300);
     font-weight: 500;
   }
   .drop-zone-secondary {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-600);
   }
 
@@ -619,7 +619,7 @@
     gap: 2px;
   }
   .file-name {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-200);
     max-width: 280px;
@@ -628,13 +628,13 @@
     white-space: nowrap;
   }
   .file-meta {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-500);
   }
 
   /* Stage label */
   .stage-label {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-surface-400);
   }
 
@@ -669,7 +669,7 @@
     gap: 6px;
     padding: 6px 14px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-weight: 500;
     cursor: pointer;
     transition: all 0.12s ease;
@@ -698,7 +698,7 @@
   }
   .action-btn.compact {
     padding: 4px 12px;
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
   }
   .btn-icon {
     width: 14px;
@@ -728,7 +728,7 @@
     display: flex;
     align-items: flex-start;
     gap: 6px;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-500);
     line-height: 1.4;
     padding: 0 2px;

@@ -395,6 +395,16 @@
     }
   })
 
+  // --- Text-size preset application ---
+  $effect(() => {
+    const size = settingsStore.get('app.text_size')
+    const html = document.documentElement
+    html.classList.remove('text-size-sm', 'text-size-md', 'text-size-lg')
+    if (size === 'sm' || size === 'lg') {
+      html.classList.add(`text-size-${size}`)
+    }
+  })
+
   function handleRequestClick(requestId: string): void {
     const request = collectionsStore.getRequestById(requestId)
     if (request) {
@@ -858,7 +868,7 @@
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-bottom: 1px solid var(--glass-border);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     color: var(--color-surface-200);
     flex-shrink: 0;
   }
@@ -871,7 +881,7 @@
     border-radius: 3px;
     background: var(--color-surface-700);
     font-family: monospace;
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-brand-300);
   }
   .update-btn {
@@ -880,7 +890,7 @@
     border: 1px solid var(--glass-border);
     background: var(--tint-muted);
     color: var(--color-surface-200);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.12s;

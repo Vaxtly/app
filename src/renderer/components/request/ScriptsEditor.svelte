@@ -358,7 +358,7 @@
     border-radius: var(--radius-md);
     background: var(--color-surface-800);
     color: var(--color-surface-200);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     cursor: pointer;
     outline: none;

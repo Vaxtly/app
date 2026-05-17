@@ -422,7 +422,7 @@
     text-align: center;
     padding: 1px 6px;
     border-radius: var(--radius-sm);
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 500;
     color: var(--cat-color);
     background: color-mix(in srgb, var(--cat-color) 12%, transparent);
@@ -456,7 +456,7 @@
     border: none;
     background: transparent;
     font-family: inherit;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 500;
     color: var(--color-surface-500);
     cursor: pointer;
@@ -475,7 +475,7 @@
 
   /* Detail body area */
   .sl-detail-body {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
   }
 
   .sl-detail-section {
@@ -484,7 +484,7 @@
 
   .sl-detail-label {
     display: block;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 600;
     color: var(--color-surface-500);
     text-transform: uppercase;
@@ -523,7 +523,7 @@
     padding: 6px 8px;
     background: color-mix(in srgb, var(--color-surface-900) 80%, transparent);
     border-radius: var(--radius-sm);
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     line-height: 1.5;
     color: var(--color-surface-300);
     white-space: pre-wrap;

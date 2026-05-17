@@ -402,7 +402,7 @@
     border-radius: 4px;
     background: transparent;
     color: var(--color-surface-400);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-family: inherit;
     cursor: pointer;
     transition: color 0.12s, background 0.12s;
@@ -432,7 +432,7 @@
   }
 
   .ae-hint {
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     color: var(--color-surface-500);
     margin: 0;
   }
@@ -450,7 +450,7 @@
   }
 
   .ae-label {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -466,7 +466,7 @@
     border-radius: 6px;
     background: var(--color-surface-800);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: border-color 0.12s, background 0.12s;
@@ -490,7 +490,7 @@
     border-radius: 6px;
     background: var(--color-surface-800);
     color: var(--color-surface-100);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     cursor: pointer;
@@ -515,7 +515,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     color: var(--color-surface-300);
     cursor: pointer;
   }
@@ -525,7 +525,7 @@
   }
 
   .ae-toggle-label {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-weight: 500;
   }
 
@@ -558,7 +558,7 @@
     align-items: center;
     padding: 1px 6px;
     border-radius: 4px;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 500;
   }
 
@@ -568,12 +568,12 @@
   }
 
   .ae-token-expiry {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-500);
   }
 
   .ae-token-preview {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-400);
     background: var(--color-surface-800);
     padding: 4px 6px;
@@ -582,7 +582,7 @@
   }
 
   .ae-token-error {
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     color: var(--color-danger-light);
     padding: 6px 8px;
     background: color-mix(in srgb, var(--color-danger-light) 8%, transparent);
@@ -602,7 +602,7 @@
     padding: 4px 10px;
     border: none;
     border-radius: 5px;
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
@@ -678,7 +678,7 @@
     align-items: center;
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     font-weight: 600;
     background: color-mix(in srgb, var(--color-brand-500) 15%, transparent);
     color: var(--color-brand-400);
@@ -686,7 +686,7 @@
   }
 
   .ae-inherit-detail {
-    font-size: 10px;
+    font-size: calc(10px + var(--ui-bump));
     color: var(--color-surface-400);
     word-break: break-all;
   }

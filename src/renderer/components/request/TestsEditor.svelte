@@ -240,7 +240,7 @@
     border-radius: 2px;
     background: var(--color-surface-800);
     color: var(--color-surface-200);
-    font-size: 12px;
+    font-size: calc(12px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     appearance: none;

@@ -384,7 +384,7 @@
     border-radius: 6px;
     background: var(--color-surface-800);
     color: var(--color-surface-200);
-    font-size: 11px;
+    font-size: calc(11px + var(--ui-bump));
     font-family: inherit;
     outline: none;
     transition: border-color 0.12s;
@@ -478,7 +478,7 @@
   }
 
   .ce-env-default-badge {
-    font-size: 9px;
+    font-size: calc(9px + var(--ui-bump));
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.04em;
