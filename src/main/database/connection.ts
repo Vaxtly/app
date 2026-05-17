@@ -15,11 +15,12 @@ import m005 from './migrations/005_indexes_and_constraints'
 import m006 from './migrations/006_collection_folder_auth'
 import m007 from './migrations/007_collection_folder_scripts'
 import m008 from './migrations/008_environment_parent'
+import m009 from './migrations/009_external_keys'
 
 let db: Database.Database | null = null
 
 // Static migration registry. Add new migrations here.
-const ALL_MIGRATIONS: MigrationFile[] = [m001, m002, m003, m004, m005, m006, m007, m008]
+const ALL_MIGRATIONS: MigrationFile[] = [m001, m002, m003, m004, m005, m006, m007, m008, m009]
 
 /**
  * Open or create the database. Runs all pending migrations.

@@ -82,6 +82,7 @@ export function create(data: {
   workspace_id?: string
   parent_id?: string | null
   variables?: string
+  external_key?: string | null
 }): Environment {
   const db = getDatabase()
   const id = uuid()
@@ -95,14 +96,24 @@ export function create(data: {
   const variables = data.variables ? encryptVariables(data.variables) : '[]'
 
   db.prepare(`
-    INSERT INTO environments (id, workspace_id, parent_id, name, variables, "order", created_at, updated_at)
+    INSERT INTO environments (id, workspace_id, parent_id, name, variables, "order", external_key, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?,
       (SELECT COALESCE(MAX("order"), 0) + 1 FROM environments
         WHERE workspace_id IS ? AND parent_id IS ?),
-      ?, ?)
-  `).run(id, workspaceId, parentId, data.name, variables, workspaceId, parentId, now, now)
+      ?, ?, ?)
+  `).run(id, workspaceId, parentId, data.name, variables, workspaceId, parentId, data.external_key ?? null, now, now)
 
   return findById(id)!
+}
+
+export function findByExternalKey(workspaceId: string | null, externalKey: string): Environment | undefined {
+  const db = getDatabase()
+  const row = workspaceId
+    ? db.prepare('SELECT * FROM environments WHERE workspace_id = ? AND external_key = ?')
+        .get(workspaceId, externalKey) as Environment | undefined
+    : db.prepare('SELECT * FROM environments WHERE workspace_id IS NULL AND external_key = ?')
+        .get(externalKey) as Environment | undefined
+  return row ? decryptEnvironment(row) : undefined
 }
 
 export function findById(id: string): Environment | undefined {
@@ -180,6 +191,7 @@ export function update(
       "order" = ?,
       vault_synced = ?,
       vault_path = ?,
+      external_key = ?,
       updated_at = ?
     WHERE id = ?
   `).run(
@@ -191,6 +203,7 @@ export function update(
     data.order ?? existing.order,
     data.vault_synced ?? existing.vault_synced,
     data.vault_path ?? existing.vault_path,
+    data.external_key !== undefined ? data.external_key : existing.external_key,
     new Date().toISOString(),
     id
   )

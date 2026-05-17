@@ -1,6 +1,6 @@
 {
   "name": "vaxtly",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Vaxtly API Client",
   "author": {
     "name": "Vaxtly",
@@ -9,7 +9,8 @@
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
-    "build": "electron-vite build",
+    "build": "npm run build:cli && electron-vite build",
+    "build:cli": "tsc -p cli/tsconfig.json && node -e \"require('fs').chmodSync('cli/dist/index.js', 0o755)\"",
     "preview": "electron-vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

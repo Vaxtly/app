@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-05-17
+
+### Added
+- **AI Agent Integration** — a bundled `vaxtly` CLI and MCP server that lets AI coding agents (Cursor, Claude Code, Codex, Claude Desktop) mirror endpoints into Vaxtly while you build them. Tell your agent "add this endpoint to Vaxtly" and it just does it
+- `vaxtly upsert collection|folder|request|env|env-var` — idempotent on `--external-key`; re-running updates the existing entity, fields you don't pass are preserved
+- `vaxtly list workspaces|collections|folders|requests|envs` and `vaxtly get collection|folder|request|env` — slim navigation shapes for list, full entity with sensitive fields redacted for get
+- `vaxtly mcp` — exposes 15 MCP tools (`vaxtly_list_*`, `vaxtly_get_*`, `vaxtly_upsert_*`) with `readOnlyHint` annotations on reads
+- `vaxtly guide` — long-form, agent-optimized documentation an agent can paste into its context once and pick up the tool from scratch
+- `vaxtly install-cli` — symlinks the bundled binary into `~/.local/bin/vaxtly` (POSIX)
+- "AI Agent Integration" step added to the first-launch WelcomeGuide carousel, plus a new standalone WhatsNewModal that fires on first launch of a new version (existing users) and chains after the WelcomeGuide for brand-new installs — runs once per release, never on every start
+
+### Security
+- The agent socket is **loopback-only** (Unix domain socket on macOS/Linux, named pipe on Windows). No TCP listener. Auth via a per-launch 32-byte token stored in `~/.vaxtly/cli.json` (mode 0600), verified per-request with `crypto.timingSafeEqual`
+- **Reads always redact** sensitive fields — bearer tokens, basic auth credentials, OAuth secrets, API key values, and every environment variable value come back as `"<redacted>"`. No flag, no opt-in, no MCP parameter to view plaintext
+- `upsert.env_variable` added as the safe path for single-variable updates inside an existing env (since values are redacted on read, a full-array replace via `upsert.env` would wipe what the agent can't see)
+
+### Changed
+- Mutation side effects (e.g. `collectionsRepo.markDirty` after request changes) extracted into a shared `actions/` layer used by both the IPC handlers and the agent socket method handlers — single source of truth for sync/dirty tracking across surfaces
+
+### Database
+- Migration 009 adds `external_key TEXT` to collections, folders, requests, and environments with partial unique indexes (`WHERE external_key IS NOT NULL`) for idempotent agent-socket upserts. NULLs unrestricted, uniqueness scoped per immediate parent (workspace for collections/envs, collection for folders/requests)
+
 ## [0.10.1] - 2026-05-14
 
 ### Fixed

@@ -48,7 +48,7 @@ function decryptCollection(col: Collection): Collection {
   return { ...col, auth: decryptAuth(col.auth) }
 }
 
-export function create(data: { name: string; workspace_id?: string; description?: string }): Collection {
+export function create(data: { name: string; workspace_id?: string; description?: string; external_key?: string | null }): Collection {
   const db = getDatabase()
   const id = uuid()
   const now = new Date().toISOString()
@@ -58,11 +58,21 @@ export function create(data: { name: string; workspace_id?: string; description?
     .run(data.workspace_id ?? null)
 
   db.prepare(`
-    INSERT INTO collections (id, workspace_id, name, description, "order", created_at, updated_at)
-    VALUES (?, ?, ?, ?, 0, ?, ?)
-  `).run(id, data.workspace_id ?? null, data.name, data.description ?? null, now, now)
+    INSERT INTO collections (id, workspace_id, name, description, "order", external_key, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 0, ?, ?, ?)
+  `).run(id, data.workspace_id ?? null, data.name, data.description ?? null, data.external_key ?? null, now, now)
 
   return findById(id)!
+}
+
+export function findByExternalKey(workspaceId: string | null, externalKey: string): Collection | undefined {
+  const db = getDatabase()
+  const row = workspaceId
+    ? db.prepare('SELECT * FROM collections WHERE workspace_id = ? AND external_key = ?')
+        .get(workspaceId, externalKey) as Collection | undefined
+    : db.prepare('SELECT * FROM collections WHERE workspace_id IS NULL AND external_key = ?')
+        .get(externalKey) as Collection | undefined
+  return row ? decryptCollection(row) : undefined
 }
 
 export function findById(id: string): Collection | undefined {
@@ -109,6 +119,7 @@ export function update(id: string, data: Partial<Omit<Collection, 'id' | 'create
       auth = ?,
       scripts = ?,
       file_shas = ?,
+      external_key = ?,
       updated_at = ?
     WHERE id = ?
   `).run(
@@ -126,6 +137,7 @@ export function update(id: string, data: Partial<Omit<Collection, 'id' | 'create
     auth,
     data.scripts ?? existing.scripts,
     data.file_shas ?? existing.file_shas,
+    data.external_key !== undefined ? data.external_key : existing.external_key,
     new Date().toISOString(),
     id
   )

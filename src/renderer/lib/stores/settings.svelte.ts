@@ -12,6 +12,7 @@ export interface SettingsMap {
   'request.follow_redirects': boolean
   'app.version': string
   'app.welcomed': boolean
+  'app.last_seen_version': string
   'app.theme': 'dark' | 'light' | 'system'
   'sidebar.width': number
   'request.splitPercent': number
@@ -37,6 +38,7 @@ const defaults: SettingsMap = {
   'request.follow_redirects': true,
   'app.version': '0.0.0',
   'app.welcomed': false,
+  'app.last_seen_version': '',
   'app.theme': 'dark',
   'sidebar.width': 244,
   'request.splitPercent': 50,

@@ -30,6 +30,7 @@ import { registerGraphqlSubscriptionHandlers } from './ipc/graphql-subscription'
 import { disconnectAll as disconnectAllGqlSubs } from './services/graphql-subscription'
 import { disconnectAll as disconnectAllMcpServers } from './services/mcp-client'
 import { disconnectAll as disconnectAllWebSockets } from './services/websocket-client'
+import * as agentSocket from './services/agent-socket'
 import { initUpdater, checkForUpdates } from './services/updater'
 import * as workspacesRepo from './database/repositories/workspaces'
 import { getSetting, setSetting } from './database/repositories/settings'
@@ -432,6 +433,15 @@ app.whenReady().then(async () => {
   // Register IPC handlers
   registerAllIpcHandlers()
 
+  // Start the local agent socket so the bundled CLI / MCP wrapper can upsert
+  // entities into the running app. Loopback-only Unix socket / named pipe,
+  // token-gated via ~/.vaxtly/cli.json (0600). Non-fatal if it fails to bind.
+  try {
+    await agentSocket.start()
+  } catch (err) {
+    console.error('agent-socket failed to start:', err)
+  }
+
   // Drop legacy request_histories table (feature removed)
   getDatabase().exec('DROP TABLE IF EXISTS request_histories')
 
@@ -471,5 +481,6 @@ app.on('will-quit', () => {
   disconnectAllMcpServers()
   disconnectAllWebSockets()
   disconnectAllGqlSubs()
+  agentSocket.stop()
   closeDatabase()
 })

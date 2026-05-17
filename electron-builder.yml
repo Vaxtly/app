@@ -26,6 +26,8 @@ publish:
 extraResources:
   - from: build/icons
     to: icons
+  - from: cli/dist
+    to: cli
 
 win:
   target: nsis

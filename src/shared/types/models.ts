@@ -26,6 +26,7 @@ export interface Collection {
   auth: string | null // JSON string: AuthConfig
   scripts: string | null // JSON string: ScriptsConfig
   file_shas: string | null // JSON string: Record<string, FileState>
+  external_key: string | null
   created_at: string
   updated_at: string
 }
@@ -46,6 +47,7 @@ export interface Folder {
   default_environment_id: string | null
   auth: string | null // JSON string: AuthConfig
   scripts: string | null // JSON string: ScriptsConfig
+  external_key: string | null
   created_at: string
   updated_at: string
 }
@@ -64,6 +66,7 @@ export interface Request {
   auth: string | null // JSON string: AuthConfig
   scripts: string | null // JSON string: ScriptsConfig
   order: number
+  external_key: string | null
   created_at: string
   updated_at: string
 }
@@ -78,6 +81,7 @@ export interface Environment {
   order: number
   vault_synced: number // 0 | 1
   vault_path: string | null
+  external_key: string | null
   created_at: string
   updated_at: string
 }

@@ -10,6 +10,7 @@
   import SystemLog from './components/layout/SystemLog.svelte'
   import SettingsModal from './components/settings/SettingsModal.svelte'
   import WelcomeGuide from './components/modals/WelcomeGuide.svelte'
+  import WhatsNewModal from './components/modals/WhatsNewModal.svelte'
   import ToastContainer from './components/shared/ToastContainer.svelte'
   import ConflictModal from './components/modals/ConflictModal.svelte'
   import OrphanedCollectionModal from './components/modals/OrphanedCollectionModal.svelte'
@@ -27,6 +28,22 @@
   // Track the active RequestBuilder for save/send shortcuts
   let activeBuilder = $state<{ save: () => Promise<void>; send: () => Promise<void> } | undefined>(undefined)
   let showWelcome = $state(false)
+  let showWhatsNew = $state(false)
+
+  /**
+   * Open the WhatsNewModal iff there's an unseen version. Idempotent on
+   * `app.last_seen_version` — once set to the current version, this is a no-op
+   * until the next release. Called at boot (for existing users) and chained
+   * after the WelcomeGuide closes (for brand-new users), so it fires at most
+   * once per install / upgrade.
+   */
+  function maybeShowWhatsNew(): void {
+    const currentVersion = settingsStore.get('app.version')
+    const lastSeen = settingsStore.get('app.last_seen_version')
+    if (currentVersion && currentVersion !== '0.0.0' && lastSeen !== currentVersion) {
+      showWhatsNew = true
+    }
+  }
   let sessionRestored = $state(false)
   let sidebarDragging = $state(false)
 
@@ -430,9 +447,21 @@
     const savedWidth = settingsStore.get('sidebar.width')
     if (savedWidth) appStore.setSidebarWidth(savedWidth)
 
-    // Show welcome guide on first launch
+    // Modal flow on launch:
+    //
+    //   First launch ever         → WelcomeGuide carousel → then WhatsNewModal
+    //   First launch this version → WhatsNewModal only
+    //   Subsequent launches       → neither
+    //
+    // The WhatsNewModal is the only thing that writes `app.last_seen_version`, so
+    // its close handler is what "consumes" the upgrade signal. The chain is wired
+    // in the template below: WelcomeGuide's onclose calls maybeShowWhatsNew(),
+    // which re-evaluates fresh state (not a stale captured boot value) so that
+    // re-opening WelcomeGuide later via the Help menu can't double-fire WhatsNew.
     if (!settingsStore.get('app.welcomed')) {
       showWelcome = true
+    } else {
+      maybeShowWhatsNew()
     }
 
     // Load workspaces and set default
@@ -725,7 +754,25 @@
   </div>
 
   <SettingsModal open={appStore.showSettings} onclose={() => appStore.closeSettings()} />
-  <WelcomeGuide open={showWelcome} onclose={() => { showWelcome = false }} />
+  <WelcomeGuide
+    open={showWelcome}
+    onclose={() => {
+      showWelcome = false
+      // Chain into WhatsNew for brand-new users so they always see the
+      // headline-feature pitch even if they skipped through the carousel.
+      // For existing-user manual re-opens via Help → Welcome, this re-evaluates
+      // fresh state and no-ops if last_seen_version already matches.
+      maybeShowWhatsNew()
+    }}
+  />
+  <WhatsNewModal
+    open={showWhatsNew}
+    onclose={() => {
+      showWhatsNew = false
+      // Single source of truth for "user has seen this release's pitch".
+      settingsStore.set('app.last_seen_version', settingsStore.get('app.version'))
+    }}
+  />
   <ToastContainer />
 
   {#if activeConflict}

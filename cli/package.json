@@ -1,0 +1,12 @@
+{
+  "name": "vaxtly-cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Vaxtly CLI — upsert collections/folders/requests/envs into a running Vaxtly app.",
+  "bin": {
+    "vaxtly": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

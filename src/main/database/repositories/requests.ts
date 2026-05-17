@@ -56,6 +56,7 @@ export function create(data: {
   url?: string
   body_type?: string
   auth?: string
+  external_key?: string | null
 }): Request {
   const db = getDatabase()
   const id = uuid()
@@ -63,11 +64,11 @@ export function create(data: {
   const auth = encryptAuth(data.auth ?? JSON.stringify({ type: 'inherit' }))
 
   db.prepare(`
-    INSERT INTO requests (id, collection_id, folder_id, name, url, method, body_type, auth, "order", created_at, updated_at)
+    INSERT INTO requests (id, collection_id, folder_id, name, url, method, body_type, auth, "order", external_key, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?,
       (SELECT COALESCE(MAX("order"), 0) + 1 FROM requests
        WHERE collection_id = ? AND folder_id IS ?),
-      ?, ?)
+      ?, ?, ?)
   `).run(
     id,
     data.collection_id,
@@ -79,11 +80,19 @@ export function create(data: {
     auth,
     data.collection_id,
     data.folder_id ?? null,
+    data.external_key ?? null,
     now,
     now
   )
 
   return findById(id)!
+}
+
+export function findByExternalKey(collectionId: string, externalKey: string): Request | undefined {
+  const db = getDatabase()
+  const row = db.prepare('SELECT * FROM requests WHERE collection_id = ? AND external_key = ?')
+    .get(collectionId, externalKey) as Request | undefined
+  return row ? decryptRequest(row) : undefined
 }
 
 export function findById(id: string): Request | undefined {
@@ -136,6 +145,7 @@ export function update(
       auth = ?,
       scripts = ?,
       "order" = ?,
+      external_key = ?,
       updated_at = ?
     WHERE id = ?
   `).run(
@@ -151,6 +161,7 @@ export function update(
     auth,
     data.scripts ?? existing.scripts,
     data.order ?? existing.order,
+    data.external_key !== undefined ? data.external_key : existing.external_key,
     new Date().toISOString(),
     id
   )

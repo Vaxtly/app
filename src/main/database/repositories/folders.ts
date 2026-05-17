@@ -52,17 +52,18 @@ export function create(data: {
   collection_id: string
   name: string
   parent_id?: string
+  external_key?: string | null
 }): Folder {
   const db = getDatabase()
   const id = uuid()
   const now = new Date().toISOString()
 
   db.prepare(`
-    INSERT INTO folders (id, collection_id, parent_id, name, "order", created_at, updated_at)
+    INSERT INTO folders (id, collection_id, parent_id, name, "order", external_key, created_at, updated_at)
     VALUES (?, ?, ?, ?,
       (SELECT COALESCE(MAX("order"), 0) + 1 FROM folders
        WHERE collection_id = ? AND parent_id IS ?),
-      ?, ?)
+      ?, ?, ?)
   `).run(
     id,
     data.collection_id,
@@ -70,11 +71,19 @@ export function create(data: {
     data.name,
     data.collection_id,
     data.parent_id ?? null,
+    data.external_key ?? null,
     now,
     now
   )
 
   return findById(id)!
+}
+
+export function findByExternalKey(collectionId: string, externalKey: string): Folder | undefined {
+  const db = getDatabase()
+  const row = db.prepare('SELECT * FROM folders WHERE collection_id = ? AND external_key = ?')
+    .get(collectionId, externalKey) as Folder | undefined
+  return row ? decryptFolder(row) : undefined
 }
 
 export function findById(id: string): Folder | undefined {
@@ -104,7 +113,7 @@ export function findByParent(parentId: string | null, collectionId: string): Fol
 
 export function update(
   id: string,
-  data: Partial<Pick<Folder, 'name' | 'parent_id' | 'order' | 'environment_ids' | 'default_environment_id' | 'auth' | 'scripts'>>
+  data: Partial<Pick<Folder, 'name' | 'parent_id' | 'order' | 'environment_ids' | 'default_environment_id' | 'auth' | 'scripts' | 'external_key'>>
 ): Folder | undefined {
   const db = getDatabase()
   const existing = findById(id)
@@ -123,6 +132,7 @@ export function update(
       default_environment_id = ?,
       auth = ?,
       scripts = ?,
+      external_key = ?,
       updated_at = ?
     WHERE id = ?
   `).run(
@@ -133,6 +143,7 @@ export function update(
     data.default_environment_id ?? existing.default_environment_id,
     auth,
     data.scripts ?? existing.scripts,
+    data.external_key !== undefined ? data.external_key : existing.external_key,
     new Date().toISOString(),
     id
   )

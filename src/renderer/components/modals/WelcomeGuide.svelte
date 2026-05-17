@@ -30,6 +30,11 @@
       icon: 'M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z',
     },
     {
+      title: 'AI Agent Integration',
+      description: `Tell your AI coding agent "add this endpoint to Vaxtly" and it just does it. Works with Cursor, Claude Code, Codex, Claude Desktop, or anything that can shell out or speak MCP. Vaxtly ships a CLI and MCP server bundled with the app — they talk to a running Vaxtly over a local socket. Secrets are always redacted on read; no opt-in.`,
+      icon: 'M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z',
+    },
+    {
       title: 'Git Sync',
       description: 'Sync your collections to GitHub or GitLab. Your requests are serialized to readable YAML files. Sensitive data is detected and flagged before pushing. Conflicts are resolved via a simple prompt.',
       icon: 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4',
