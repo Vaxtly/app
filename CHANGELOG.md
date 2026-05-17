@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.11.2] - 2026-05-17
+
+### Added
+- **Text size setting** — new Appearance row in Settings → General with three presets (Small, Medium, Large) that scales the interface font by ±1px. Tailwind size tokens are remapped per preset, and every explicit `font-size` in component styles routes through a shared `--ui-bump` CSS variable, so modals, settings tabs, CodeMirror, and the splash screen all follow the setting. The picker buttons themselves stay pinned to fixed sizes so they remain a stable visual reference
+
 ## [0.11.1] - 2026-05-17
 
 ### Fixed
