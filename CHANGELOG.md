@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.11.3] - 2026-06-16
+
+### Added
+- **Export as Postman Collection** — new option in the collection context menu (alongside Export and Export as OpenAPI) that generates a [Postman Collection v2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json) JSON file. The folder hierarchy maps to nested item groups; requests, headers, query params (with disabled flags), bodies (JSON, XML, raw, GraphQL, form-data, URL-encoded), auth (Bearer, Basic, API Key, OAuth 2.0 at request/folder/collection level), and collection variables are all preserved. The file imports directly into Postman. Note: credentials are included in plaintext (matching the native Vaxtly export), and pre-request scripts/assertions are not translated to Postman events
+
 ## [0.11.2] - 2026-05-17
 
 ### Added
