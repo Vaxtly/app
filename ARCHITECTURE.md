@@ -107,6 +107,7 @@ vaxtly/
 │   │   │   ├── sensitive-data-scanner.ts # Scan/sanitize sensitive data in requests, variables & MCP servers
 │   │   │   ├── sse-parser.ts           # Stateful SSE text parser (spec-compliant, handles partial chunks)
 │   │   │   ├── openapi-export.ts     # OpenAPI 3.0.3 YAML export from collection (paths, tags, auth, body)
+│   │   │   ├── postman-export.ts      # Postman Collection v2.1 export from collection (folders→item groups, auth, body, variables)
 │   │   │   ├── data-export-import.ts  # Export/import collections, environments, MCP servers, config
 │   │   │   ├── openapi-import.ts     # Import OpenAPI 3.x/Swagger 2.x specs (JSON/YAML) as collections
 │   │   │   ├── postman-import.ts      # Import Postman collections/environments (3 formats)
@@ -265,6 +266,7 @@ vaxtly/
 │   │   ├── aws-secrets-manager-provider.test.ts # 17 tests: CRUD, pagination, credential resolution
 │   │   ├── aws-localstack.test.ts        # 5 tests: real CRUD against LocalStack (auto-skips when unavailable)
 │   │   ├── openapi-export.test.ts      # 23 tests: OpenAPI 3.0.3 YAML export (paths, tags, auth, body, params, security schemes)
+│   │   ├── postman-export.test.ts      # 11 tests: Postman v2.1 export (envelope, headers/query, nested folders, body types, auth, variables)
 │   │   ├── openapi-import.test.ts      # 26 tests: OpenAPI 3.x import (JSON/YAML, paths, tags→folders, auth, body types)
 │   │   ├── data-export-import.test.ts  # 15 tests: export + import + nested + workspace
 │   │   ├── postman-import.test.ts      # 14 tests: 3 formats + form-data + URL objects + XML
@@ -569,6 +571,7 @@ Pattern: `ipcMain.handle('domain:action', handler)` in main, `ipcRenderer.invoke
 | `data:export` | ipc/data-import-export.ts | `dataService.export{All,Collections,Environments,McpServers,Config}()` | `api.data.export(type, wsId?)` |
 | `data:export-mcp-server` | ipc/data-import-export.ts | `dataService.exportSingleMcpServer(id)` | `api.data.exportMcpServer(id)` |
 | `data:export-openapi` | ipc/data-import-export.ts | `exportOpenAPI(collectionId)` → YAML string | `api.data.exportOpenAPI(id)` |
+| `data:export-postman` | ipc/data-import-export.ts | `exportPostman(collectionId)` → Postman v2.1 doc | `api.data.exportPostman(id)` |
 | `data:pick-and-read` | ipc/data-import-export.ts | `dialog.showOpenDialog()` + `readFileSync()` | `api.data.pickAndRead()` |
 | `data:import` | ipc/data-import-export.ts | `dataService.importData(json, wsId?)` | `api.data.import(json, wsId?)` |
 | `postman:import` | ipc/data-import-export.ts | `importPostman(json, wsId?)` | `api.data.importPostman(json, wsId?)` |

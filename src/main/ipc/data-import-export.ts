@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import { IPC } from '../../shared/types/ipc'
 import * as dataService from '../services/data-export-import'
 import { exportOpenAPI } from '../services/openapi-export'
+import { exportPostman } from '../services/postman-export'
 import { importPostman } from '../services/postman-import'
 import { importInsomnia } from '../services/insomnia-import'
 import { importOpenAPI } from '../services/openapi-import'
@@ -41,6 +42,10 @@ export function registerDataImportExportHandlers(): void {
 
   ipcMain.handle(IPC.DATA_EXPORT_OPENAPI, async (_event, collectionId: string) => {
     return exportOpenAPI(collectionId)
+  })
+
+  ipcMain.handle(IPC.DATA_EXPORT_POSTMAN, async (_event, collectionId: string) => {
+    return exportPostman(collectionId)
   })
 
   ipcMain.handle(IPC.DATA_PICK_AND_READ, async () => {

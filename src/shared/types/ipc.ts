@@ -88,6 +88,7 @@ export const IPC = {
   DATA_EXPORT_COLLECTION: 'data:export-collection',
   DATA_EXPORT_MCP_SERVER: 'data:export-mcp-server',
   DATA_EXPORT_OPENAPI: 'data:export-openapi',
+  DATA_EXPORT_POSTMAN: 'data:export-postman',
   DATA_IMPORT: 'data:import',
   DATA_PICK_AND_READ: 'data:pick-and-read',
   POSTMAN_IMPORT: 'postman:import',

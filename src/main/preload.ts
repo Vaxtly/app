@@ -175,6 +175,8 @@ const api = {
       ipcRenderer.invoke(IPC.DATA_EXPORT_MCP_SERVER, serverId),
     exportOpenAPI: (collectionId: string): Promise<string> =>
       ipcRenderer.invoke(IPC.DATA_EXPORT_OPENAPI, collectionId),
+    exportPostman: (collectionId: string): Promise<Record<string, unknown>> =>
+      ipcRenderer.invoke(IPC.DATA_EXPORT_POSTMAN, collectionId),
     pickAndRead: (): Promise<{ content: string; name: string } | null> =>
       ipcRenderer.invoke(IPC.DATA_PICK_AND_READ),
     import: (json: string, workspaceId?: string): Promise<{ collections: number; environments: number; mcp_servers: number; config: boolean; errors: string[] }> =>
