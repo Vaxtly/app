@@ -11,6 +11,9 @@ vi.mock('electron', () => ({
     getPath: () => '/tmp',
     getVersion: () => '0.0.0-test',
   },
+  // Upsert methods broadcast a data-changed event to renderer windows; in tests
+  // there are none, so getAllWindows() returns an empty array.
+  BrowserWindow: { getAllWindows: () => [] },
 }))
 
 import { openTestDatabase, closeDatabase, getDatabase } from '../../src/main/database/connection'

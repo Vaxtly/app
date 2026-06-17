@@ -16,7 +16,7 @@
   import OrphanedCollectionModal from './components/modals/OrphanedCollectionModal.svelte'
   import CurlImportModal from './components/modals/CurlImportModal.svelte'
   import { isCurlCommand, parseCurl, type ParsedCurl } from '../shared/curl-parser'
-  import type { SyncConflict, OrphanedCollection, OrphanedMcpServer } from './lib/types'
+  import type { SyncConflict, OrphanedCollection, OrphanedMcpServer, AgentDataChangedEvent } from './lib/types'
   import { appStore } from './lib/stores/app.svelte'
   import { collectionsStore } from './lib/stores/collections.svelte'
   import { environmentsStore } from './lib/stores/environments.svelte'
@@ -446,6 +446,28 @@
     }
   }
 
+  // Coalesce bursts of agent-socket (CLI / MCP) writes: an MCP run can fire
+  // dozens of upserts back-to-back, so debounce and reload each affected store
+  // at most once per quiet window instead of per write.
+  let agentReloadTimer: ReturnType<typeof setTimeout> | null = null
+  let agentReloadEnv = false
+  let agentReloadCollections = false
+  function handleAgentDataChanged(event: AgentDataChangedEvent): void {
+    if (event.workspaceId !== appStore.activeWorkspaceId) return
+    if (event.kind === 'env') agentReloadEnv = true
+    else agentReloadCollections = true
+    if (agentReloadTimer) clearTimeout(agentReloadTimer)
+    agentReloadTimer = setTimeout(() => {
+      agentReloadTimer = null
+      const workspaceId = appStore.activeWorkspaceId
+      if (!workspaceId) return
+      if (agentReloadCollections) collectionsStore.loadAll(workspaceId)
+      if (agentReloadEnv) environmentsStore.loadAll(workspaceId)
+      agentReloadCollections = false
+      agentReloadEnv = false
+    }, 150)
+  }
+
   onMount(async () => {
     // Detect install source (brew / scoop / standalone)
     installSource = await window.api.updater.installSource()
@@ -545,6 +567,8 @@
           environmentsStore.loadAll(workspaceId)
         }
       }),
+      // CLI / MCP wrote data over the agent socket — refresh affected stores live
+      window.api.on.agentDataChanged(handleAgentDataChanged),
       // MCP push events
       window.api.on.mcpStatusChanged((data) => mcpStore.handleStatusChanged(data)),
       window.api.on.mcpNotification((entry) => mcpStore.handleNotification(entry)),
@@ -614,6 +638,7 @@
       cleanups.forEach((fn) => fn())
       document.removeEventListener('keydown', handleKeydown)
       clearTimeout(saveTimer)
+      if (agentReloadTimer) clearTimeout(agentReloadTimer)
     }
   })
 </script>

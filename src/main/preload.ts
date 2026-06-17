@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC } from '../shared/types/ipc'
+import { IPC, type AgentDataChangedEvent } from '../shared/types/ipc'
 import type { Workspace, Collection, Folder, Request, Environment, AppSetting, WindowState } from '../shared/types/models'
 import type { RequestConfig, ResponseData, SSEStreamStart, SSEChunk, SSEStreamEnd } from '../shared/types/http'
 import type { SyncResult, SyncConflict, OrphanedCollection, OrphanedMcpServer, SessionLogEntry } from '../shared/types/sync'
@@ -431,6 +431,13 @@ const api = {
       }
       ipcRenderer.on(IPC.SYNC_PULL_COMPLETE, handler)
       return () => ipcRenderer.removeListener(IPC.SYNC_PULL_COMPLETE, handler)
+    },
+    agentDataChanged: (callback: (event: AgentDataChangedEvent) => void): (() => void) => {
+      const handler = (_event: Electron.IpcRendererEvent, data: AgentDataChangedEvent): void => {
+        callback(data)
+      }
+      ipcRenderer.on(IPC.AGENT_DATA_CHANGED, handler)
+      return () => ipcRenderer.removeListener(IPC.AGENT_DATA_CHANGED, handler)
     },
     sseStreamStart: (callback: (data: SSEStreamStart) => void): (() => void) => {
       const handler = (_event: Electron.IpcRendererEvent, data: SSEStreamStart): void => {

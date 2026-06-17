@@ -9,6 +9,7 @@
 import * as foldersRepo from '../../../database/repositories/folders'
 import * as foldersActions from '../../../actions/folders'
 import { registerMethod } from '../router'
+import { notifyAgentDataChanged } from '../notifier'
 import {
   optionalString,
   requireString,
@@ -34,6 +35,7 @@ export function registerUpsertFolder(): void {
       findByExternalKey: (k) => foldersRepo.findByExternalKey(collectionId, k),
       inScope: (f) => f.collection_id === collectionId,
     })
+    let result: UpsertResult
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = foldersActions.updateFolder(existing.id, {
@@ -41,26 +43,29 @@ export function registerUpsertFolder(): void {
         ...(name !== undefined && { name }),
         ...(parentFolderId !== undefined && { parent_id: parentFolderId }),
       })!
-      return {
+      result = {
         id: updated.id,
         external_key: externalKey,
         created: false,
         updated_at: updated.updated_at,
       }
+    } else {
+      const name = requireString(params.name, 'name')
+      const created = foldersActions.createFolder({
+        collection_id: collectionId,
+        name,
+        parent_id: parentFolderId ?? undefined,
+        external_key: externalKey,
+      })
+      result = {
+        id: created.id,
+        external_key: externalKey,
+        created: true,
+        updated_at: created.updated_at,
+      }
     }
 
-    const name = requireString(params.name, 'name')
-    const created = foldersActions.createFolder({
-      collection_id: collectionId,
-      name,
-      parent_id: parentFolderId ?? undefined,
-      external_key: externalKey,
-    })
-    return {
-      id: created.id,
-      external_key: externalKey,
-      created: true,
-      updated_at: created.updated_at,
-    }
+    notifyAgentDataChanged({ workspaceId, kind: 'folder' })
+    return result
   })
 }

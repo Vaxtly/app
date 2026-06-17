@@ -8,6 +8,7 @@
 import * as collectionsRepo from '../../../database/repositories/collections'
 import * as collectionsActions from '../../../actions/collections'
 import { registerMethod } from '../router'
+import { notifyAgentDataChanged } from '../notifier'
 import { optionalString, requireString, resolveUpsertTarget, resolveWorkspaceId } from './_resolvers'
 
 export interface UpsertResult {
@@ -31,6 +32,7 @@ export function registerUpsertCollection(): void {
       findByExternalKey: (k) => collectionsRepo.findByExternalKey(workspaceId, k),
       inScope: (c) => c.workspace_id === workspaceId,
     })
+    let result: UpsertResult
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = collectionsActions.updateCollection(existing.id, {
@@ -38,26 +40,29 @@ export function registerUpsertCollection(): void {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
       })!
-      return {
+      result = {
         id: updated.id,
         external_key: externalKey,
         created: false,
         updated_at: updated.updated_at,
       }
+    } else {
+      const name = requireString(params.name, 'name')
+      const created = collectionsActions.createCollection({
+        name,
+        workspace_id: workspaceId,
+        description,
+        external_key: externalKey,
+      })
+      result = {
+        id: created.id,
+        external_key: externalKey,
+        created: true,
+        updated_at: created.updated_at,
+      }
     }
 
-    const name = requireString(params.name, 'name')
-    const created = collectionsActions.createCollection({
-      name,
-      workspace_id: workspaceId,
-      description,
-      external_key: externalKey,
-    })
-    return {
-      id: created.id,
-      external_key: externalKey,
-      created: true,
-      updated_at: created.updated_at,
-    }
+    notifyAgentDataChanged({ workspaceId, kind: 'collection' })
+    return result
   })
 }

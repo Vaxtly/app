@@ -233,6 +233,19 @@ export const IPC = {
   // CLI / Agent integration — bundled `vaxtly` CLI installation onto PATH
   CLI_INSTALL_ON_PATH: 'cli:install-on-path',
   CLI_PATH_STATUS: 'cli:path-status',
+
+  // Agent socket data mutation (main→renderer push) — fired after a CLI/MCP
+  // upsert commits, so the renderer can refresh its cached stores live.
+  AGENT_DATA_CHANGED: 'agent:data-changed',
 } as const
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC]
+
+/**
+ * Payload for AGENT_DATA_CHANGED. `kind` identifies which store is affected so
+ * the renderer can reload only what changed (env vs. collection tree).
+ */
+export interface AgentDataChangedEvent {
+  workspaceId: string
+  kind: 'collection' | 'folder' | 'request' | 'env'
+}

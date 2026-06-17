@@ -11,6 +11,7 @@
 import * as environmentsRepo from '../../../database/repositories/environments'
 import * as environmentsActions from '../../../actions/environments'
 import { registerMethod, HandlerError } from '../router'
+import { notifyAgentDataChanged } from '../notifier'
 import { ERR } from '../protocol'
 import {
   optionalString,
@@ -46,6 +47,7 @@ export function registerUpsertEnv(): void {
       findByExternalKey: (k) => environmentsRepo.findByExternalKey(workspaceId, k),
       inScope: (e) => e.workspace_id === workspaceId,
     })
+    let result: UpsertResult
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = environmentsActions.updateEnvironment(existing.id, {
@@ -54,27 +56,30 @@ export function registerUpsertEnv(): void {
         ...(parentId !== undefined && { parent_id: parentId }),
         ...(variables !== undefined && { variables }),
       })!
-      return {
+      result = {
         id: updated.id,
         external_key: externalKey,
         created: false,
         updated_at: updated.updated_at,
       }
+    } else {
+      const name = requireString(params.name, 'name')
+      const created = environmentsActions.createEnvironment({
+        name,
+        workspace_id: workspaceId,
+        parent_id: parentId ?? null,
+        variables,
+        external_key: externalKey,
+      })
+      result = {
+        id: created.id,
+        external_key: externalKey,
+        created: true,
+        updated_at: created.updated_at,
+      }
     }
 
-    const name = requireString(params.name, 'name')
-    const created = environmentsActions.createEnvironment({
-      name,
-      workspace_id: workspaceId,
-      parent_id: parentId ?? null,
-      variables,
-      external_key: externalKey,
-    })
-    return {
-      id: created.id,
-      external_key: externalKey,
-      created: true,
-      updated_at: created.updated_at,
-    }
+    notifyAgentDataChanged({ workspaceId, kind: 'env' })
+    return result
   })
 }

@@ -12,6 +12,7 @@
 import * as requestsRepo from '../../../database/repositories/requests'
 import * as requestsActions from '../../../actions/requests'
 import { registerMethod, HandlerError } from '../router'
+import { notifyAgentDataChanged } from '../notifier'
 import { ERR } from '../protocol'
 import {
   optionalString,
@@ -76,6 +77,7 @@ export function registerUpsertRequest(): void {
         ...(folderId !== undefined && { folder_id: folderId }),
       }
       const updated = requestsActions.updateRequest(existing.id, updates)!
+      notifyAgentDataChanged({ workspaceId, kind: 'request' })
       return {
         id: updated.id,
         external_key: externalKey,
@@ -107,6 +109,7 @@ export function registerUpsertRequest(): void {
       if (followUp) updatedAt = followUp.updated_at
     }
 
+    notifyAgentDataChanged({ workspaceId, kind: 'request' })
     return {
       id: created.id,
       external_key: externalKey,

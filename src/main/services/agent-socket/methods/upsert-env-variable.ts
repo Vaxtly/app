@@ -19,6 +19,7 @@
 import * as environmentsRepo from '../../../database/repositories/environments'
 import * as environmentsActions from '../../../actions/environments'
 import { registerMethod, HandlerError } from '../router'
+import { notifyAgentDataChanged } from '../notifier'
 import { ERR } from '../protocol'
 import { requireString, resolveWorkspaceId } from './_resolvers'
 import type { EnvironmentVariable } from '../../../../shared/types/models'
@@ -71,6 +72,7 @@ export function registerUpsertEnvVariable(): void {
       throw new HandlerError(ERR.INTERNAL, 'Failed to update environment')
     }
 
+    notifyAgentDataChanged({ workspaceId, kind: 'env' })
     return {
       id: updated.id,
       env_external_key: envExternalKey,

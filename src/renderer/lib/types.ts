@@ -32,6 +32,8 @@ export type {
 
 export type { SyncResult, SyncConflict, ConflictChange, OrphanedCollection, OrphanedMcpServer, SessionLogEntry, HttpLogDetail } from '../../shared/types/sync'
 
+export type { AgentDataChangedEvent } from '../../shared/types/ipc'
+
 export type {
   McpTransportType,
   McpServerStatus,
