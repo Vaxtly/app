@@ -18,6 +18,7 @@ import {
   requireString,
   resolveCollectionId,
   resolveFolderId,
+  resolveUpsertTarget,
   resolveWorkspaceId,
 } from './_resolvers'
 import type { UpsertResult } from './upsert-collection'
@@ -52,10 +53,18 @@ export function registerUpsertRequest(): void {
     const queryParams = jsonStringOrUndefined(params.query_params, 'query_params')
     const auth = jsonStringOrUndefined(params.auth, 'auth')
 
-    const existing = requestsRepo.findByExternalKey(collectionId, externalKey)
+    const existing = resolveUpsertTarget({
+      id: params.id,
+      externalKey,
+      label: 'Request',
+      findById: requestsRepo.findById,
+      findByExternalKey: (k) => requestsRepo.findByExternalKey(collectionId, k),
+      inScope: (r) => r.collection_id === collectionId,
+    })
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updates: Partial<Omit<RequestModel, 'id' | 'created_at'>> = {
+        external_key: externalKey,
         ...(name !== undefined && { name }),
         ...(method !== undefined && { method }),
         ...(url !== undefined && { url }),

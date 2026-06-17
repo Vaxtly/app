@@ -34,11 +34,12 @@ const TOOLS = [
   {
     name: 'vaxtly_upsert_collection',
     description:
-      'Create or update a collection in Vaxtly, idempotent by external_key. Pick a stable slug (e.g. "acme", not a UUID) — re-running with the same external_key updates the existing collection. Fields you do not pass are preserved on update. If you are modifying an existing collection, call vaxtly_get_collection first to see current state. Returns { id, external_key, created, updated_at }.',
+      'Create or update a collection in Vaxtly, idempotent by external_key. Pick a stable slug (e.g. "acme", not a UUID) — re-running with the same external_key updates the existing collection. Fields you do not pass are preserved on update. If you are modifying an existing collection, call vaxtly_get_collection first to see current state. To update a collection that was created in the UI and has no external_key yet, call vaxtly_list_collections, take its id, and pass that id here together with the external_key you want to assign — this adopts the existing collection instead of creating a duplicate. Returns { id, external_key, created, updated_at }.',
     inputSchema: {
       type: 'object',
       required: ['external_key', 'name'],
       properties: {
+        id: { type: 'string', description: 'UUID of an existing collection to adopt under this external_key (get it from vaxtly_list_collections). Use this to claim a UI-created collection that has no external_key. Omit when the collection is already keyed by external_key or when creating a new one.' },
         external_key: { type: 'string', description: 'Stable identifier chosen by the caller. Reuse to update; vary to create.' },
         name: { type: 'string' },
         description: { type: 'string' },
@@ -49,11 +50,12 @@ const TOOLS = [
   {
     name: 'vaxtly_upsert_folder',
     description:
-      'Create or update a folder inside a collection, idempotent by external_key. The collection must already exist and is referenced by its own external_key — call vaxtly_list_collections first if you do not know the available collection keys. Pass parent_folder_external_key to nest under another folder, or "" (empty string) to move to the collection root. Omit it to preserve the existing parent on update.',
+      'Create or update a folder inside a collection, idempotent by external_key. The collection must already exist and is referenced by its own external_key — call vaxtly_list_collections first if you do not know the available collection keys. Pass parent_folder_external_key to nest under another folder, or "" (empty string) to move to the collection root. Omit it to preserve the existing parent on update. To update a UI-created folder that has no external_key yet, get its id from vaxtly_list_folders and pass it here with the external_key you want to assign — this adopts it instead of creating a duplicate.',
     inputSchema: {
       type: 'object',
       required: ['collection_external_key', 'external_key', 'name'],
       properties: {
+        id: { type: 'string', description: 'UUID of an existing folder to adopt under this external_key (from vaxtly_list_folders). Use this to claim a UI-created folder that has no external_key. Omit otherwise.' },
         collection_external_key: { type: 'string' },
         external_key: { type: 'string' },
         name: { type: 'string' },
@@ -68,11 +70,12 @@ const TOOLS = [
   {
     name: 'vaxtly_upsert_request',
     description:
-      'Create or update an API request inside a collection (optionally inside a folder), idempotent by external_key. IMPORTANT for updates: call vaxtly_get_request FIRST to see the existing shape — fields you do not pass are preserved, so re-passing the whole request and accidentally dropping a configured header/query/auth field is the most common mistake. Use stable slug-style external_keys (e.g. "users.list", "auth.login"), not UUIDs. Re-running with the same external_key updates the existing request and can move it between folders within the same collection (pass folder_external_key="" to move to the collection root). Headers and query params are arrays of {key, value, enabled}. Body is a JSON-encodable value or a string.',
+      'Create or update an API request inside a collection (optionally inside a folder), idempotent by external_key. IMPORTANT for updates: call vaxtly_get_request FIRST to see the existing shape — fields you do not pass are preserved, so re-passing the whole request and accidentally dropping a configured header/query/auth field is the most common mistake. Use stable slug-style external_keys (e.g. "users.list", "auth.login"), not UUIDs. Re-running with the same external_key updates the existing request and can move it between folders within the same collection (pass folder_external_key="" to move to the collection root). Headers and query params are arrays of {key, value, enabled}. Body is a JSON-encodable value or a string. To update a UI-created request that has no external_key yet, get its id from vaxtly_list_requests and pass it here with the external_key you want to assign — this adopts it instead of creating a duplicate.',
     inputSchema: {
       type: 'object',
       required: ['collection_external_key', 'external_key', 'name'],
       properties: {
+        id: { type: 'string', description: 'UUID of an existing request to adopt under this external_key (from vaxtly_list_requests). Use this to claim a UI-created request that has no external_key. Omit otherwise.' },
         collection_external_key: { type: 'string' },
         external_key: { type: 'string' },
         name: { type: 'string' },
@@ -97,11 +100,12 @@ const TOOLS = [
   {
     name: 'vaxtly_upsert_env',
     description:
-      'Create or update an environment in the workspace, idempotent by external_key. IMPORTANT: passing variables REPLACES the entire variables array — it is not a merge. Use this when creating an env or populating from a known source (e.g. a .env file). When you want to add or change a SINGLE variable inside an existing env, prefer vaxtly_upsert_env_variable instead — it preserves the other variables, which you cannot safely re-pass here because values are always redacted on read. Omit variables entirely to leave them untouched. To make this env a child of another, pass parent_external_key — the parent must already exist and cannot itself be a child (Vaxtly caps the chain at 2).',
+      'Create or update an environment in the workspace, idempotent by external_key. IMPORTANT: passing variables REPLACES the entire variables array — it is not a merge. Use this when creating an env or populating from a known source (e.g. a .env file). When you want to add or change a SINGLE variable inside an existing env, prefer vaxtly_upsert_env_variable instead — it preserves the other variables, which you cannot safely re-pass here because values are always redacted on read. Omit variables entirely to leave them untouched. To make this env a child of another, pass parent_external_key — the parent must already exist and cannot itself be a child (Vaxtly caps the chain at 2). To update a UI-created env that has no external_key yet, get its id from vaxtly_list_envs and pass it here with the external_key you want to assign — this adopts it instead of creating a duplicate.',
     inputSchema: {
       type: 'object',
       required: ['external_key', 'name'],
       properties: {
+        id: { type: 'string', description: 'UUID of an existing environment to adopt under this external_key (from vaxtly_list_envs). Use this to claim a UI-created env that has no external_key. Omit otherwise.' },
         external_key: { type: 'string' },
         name: { type: 'string' },
         parent_external_key: { type: ['string', 'null'] },

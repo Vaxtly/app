@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.11.4] - 2026-06-16
+
+### Added
+- **Adopt UI-created entities by id (agent socket / CLI / MCP).** Entities created by hand in the Vaxtly UI have no `external_key`, so a key-based upsert couldn't find them and would create a duplicate. The four upserts now accept an optional `id`: pass the entity's UUID (from the matching `list` command/tool) together with the `external_key` you want to assign, and the existing collection/folder/request/env is adopted under that key instead of duplicated. Adoption is scope-checked and refuses (conflict) if the key already belongs to a different entity. Exposed as the `--id` flag on `vaxtly upsert collection|folder|request|env` and an `id` parameter on the corresponding `vaxtly_upsert_*` MCP tools, with the agent guide and per-verb help updated to describe the flow
+
+### Fixed
+- **`vaxtly mcp` could not run as shipped.** The bundled CLI was compiled as loose CommonJS files and shipped via `extraResources` without a `node_modules`, so the MCP server's dynamic `import('@modelcontextprotocol/sdk/...')` failed at runtime — the SDK lived only inside the app's asar and was unreachable from the standalone CLI process. `build:cli` now bundles the CLI into a single self-contained `cli/dist/index.js` with esbuild (the SDK is tree-shaken to just the stdio-server path, ~1 MB, no HTTP-transport deps), so `vaxtly mcp` works from the shipped `cli/` folder with no external dependencies. `esbuild` is pinned as a direct devDependency and the CLI is still type-checked via `tsc --noEmit`
+
 ## [0.11.3] - 2026-06-16
 
 ### Added

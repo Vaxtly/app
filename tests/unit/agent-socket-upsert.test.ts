@@ -372,6 +372,105 @@ describe('upsert.env_variable', () => {
   })
 })
 
+describe('adopt by id (UI-created entities with no external_key)', () => {
+  it('adopts a UI-created collection under a new external_key instead of duplicating', async () => {
+    const ws = workspacesRepo.create({ name: 'WS' })
+    // Simulate a collection made in the UI: no external_key.
+    const uiCol = collectionsRepo.create({ name: 'Made in UI', workspace_id: ws.id })
+    expect(uiCol.external_key).toBeNull()
+
+    const adopted = expectSuccess(await call('upsert.collection', {
+      id: uiCol.id, external_key: 'acme', name: 'Made in UI',
+    }))
+    expect(adopted.created).toBe(false)
+    expect(adopted.id).toBe(uiCol.id)
+    expect(adopted.external_key).toBe('acme')
+    expect(collectionsRepo.findById(uiCol.id)!.external_key).toBe('acme')
+    // No duplicate was created.
+    expect(collectionsRepo.findByWorkspace(ws.id)).toHaveLength(1)
+
+    // Subsequent key-based upserts now find it.
+    const again = expectSuccess(await call('upsert.collection', {
+      external_key: 'acme', name: 'Renamed',
+    }))
+    expect(again.id).toBe(uiCol.id)
+    expect(again.created).toBe(false)
+  })
+
+  it('rejects adoption when the external_key is already taken by another collection', async () => {
+    const ws = workspacesRepo.create({ name: 'WS' })
+    expectSuccess(await call('upsert.collection', { external_key: 'taken', name: 'Existing' }))
+    const uiCol = collectionsRepo.create({ name: 'Made in UI', workspace_id: ws.id })
+
+    const reply = await call('upsert.collection', { id: uiCol.id, external_key: 'taken', name: 'X' })
+    expect('error' in reply).toBe(true)
+    if ('error' in reply) expect(reply.error.code).toBe(-32004) // CONFLICT
+  })
+
+  it('returns NOT_FOUND when the id does not exist', async () => {
+    workspacesRepo.create({ name: 'WS' })
+    const reply = await call('upsert.collection', { id: 'no-such-id', external_key: 'k', name: 'X' })
+    expect('error' in reply).toBe(true)
+    if ('error' in reply) expect(reply.error.code).toBe(-32002) // NOT_FOUND
+  })
+
+  it('adopts a UI-created folder by id', async () => {
+    const ws = workspacesRepo.create({ name: 'WS' })
+    const col = expectSuccess(await call('upsert.collection', { external_key: 'col', name: 'Col' }))
+    const uiFolder = foldersRepo.create({ collection_id: col.id, name: 'UI Folder' })
+    expect(uiFolder.external_key).toBeNull()
+
+    const adopted = expectSuccess(await call('upsert.folder', {
+      id: uiFolder.id, collection_external_key: 'col', external_key: 'auth', name: 'UI Folder',
+    }))
+    expect(adopted.created).toBe(false)
+    expect(adopted.id).toBe(uiFolder.id)
+    expect(foldersRepo.findById(uiFolder.id)!.external_key).toBe('auth')
+    void ws
+  })
+
+  it('adopts a UI-created request by id', async () => {
+    workspacesRepo.create({ name: 'WS' })
+    const col = expectSuccess(await call('upsert.collection', { external_key: 'col', name: 'Col' }))
+    const uiReq = requestsRepo.create({ collection_id: col.id, name: 'UI Req', method: 'GET' })
+    expect(uiReq.external_key).toBeNull()
+
+    const adopted = expectSuccess(await call('upsert.request', {
+      id: uiReq.id, collection_external_key: 'col', external_key: 'users.list', name: 'UI Req',
+    }))
+    expect(adopted.created).toBe(false)
+    expect(adopted.id).toBe(uiReq.id)
+    expect(requestsRepo.findById(uiReq.id)!.external_key).toBe('users.list')
+  })
+
+  it('adopts a UI-created environment by id', async () => {
+    const ws = workspacesRepo.create({ name: 'WS' })
+    const uiEnv = environmentsRepo.create({ name: 'UI Env', workspace_id: ws.id })
+    expect(uiEnv.external_key).toBeNull()
+
+    const adopted = expectSuccess(await call('upsert.env', {
+      id: uiEnv.id, external_key: 'prod', name: 'UI Env',
+    }))
+    expect(adopted.created).toBe(false)
+    expect(adopted.id).toBe(uiEnv.id)
+    expect(environmentsRepo.findById(uiEnv.id)!.external_key).toBe('prod')
+  })
+
+  it('rejects an id from a different collection (out of scope)', async () => {
+    workspacesRepo.create({ name: 'WS' })
+    const colA = expectSuccess(await call('upsert.collection', { external_key: 'a', name: 'A' }))
+    expectSuccess(await call('upsert.collection', { external_key: 'b', name: 'B' }))
+    const folderInA = foldersRepo.create({ collection_id: colA.id, name: 'F' })
+
+    // Try to adopt folderInA while targeting collection "b".
+    const reply = await call('upsert.folder', {
+      id: folderInA.id, collection_external_key: 'b', external_key: 'f', name: 'F',
+    })
+    expect('error' in reply).toBe(true)
+    if ('error' in reply) expect(reply.error.code).toBe(-32002) // NOT_FOUND (not in scope)
+  })
+})
+
 describe('auth gate', () => {
   it('rejects upsert calls with a wrong token', async () => {
     workspacesRepo.create({ name: 'WS' })

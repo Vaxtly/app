@@ -16,6 +16,7 @@ import {
   optionalString,
   requireString,
   resolveParentEnvId,
+  resolveUpsertTarget,
   resolveWorkspaceId,
 } from './_resolvers'
 import type { UpsertResult } from './upsert-collection'
@@ -37,10 +38,18 @@ export function registerUpsertEnv(): void {
     const parentId = resolveParentEnvId(workspaceId, params.parent_external_key)
     const variables = variablesToJson(params.variables)
 
-    const existing = environmentsRepo.findByExternalKey(workspaceId, externalKey)
+    const existing = resolveUpsertTarget({
+      id: params.id,
+      externalKey,
+      label: 'Environment',
+      findById: environmentsRepo.findById,
+      findByExternalKey: (k) => environmentsRepo.findByExternalKey(workspaceId, k),
+      inScope: (e) => e.workspace_id === workspaceId,
+    })
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = environmentsActions.updateEnvironment(existing.id, {
+        external_key: externalKey,
         ...(name !== undefined && { name }),
         ...(parentId !== undefined && { parent_id: parentId }),
         ...(variables !== undefined && { variables }),

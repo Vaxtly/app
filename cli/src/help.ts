@@ -94,6 +94,9 @@ Required:
 
 Optional:
   --description <d>      Free-text description.
+  --id <uuid>            Adopt an existing collection (e.g. one created in the
+                         UI with no external_key) under --external-key. Get the
+                         uuid from \`vaxtly list collections\`. Prevents duplicates.
   --workspace-id <uuid>  Workspace UUID. Defaults to the first workspace.
                          Discover with: vaxtly list workspaces
 
@@ -101,6 +104,9 @@ Output (stdout): {"id":"…","external_key":"…","created":true|false,"updated_
 
 Example:
   vaxtly upsert collection --external-key acme --name "Acme API"
+
+Adopt a UI-created collection (assign it an external_key, no duplicate):
+  vaxtly upsert collection --id <uuid> --external-key acme --name "Acme API"
 `
 
 const HELP_UPSERT_FOLDER = `vaxtly upsert folder — create or update a folder inside a collection.
@@ -115,6 +121,8 @@ Required:
   --name <n>                       Display name (required on create).
 
 Optional:
+  --id <uuid>                        Adopt an existing folder (from
+                                     \`vaxtly list folders\`) under --external-key.
   --parent-folder-external-key <pk>  Nest under this folder. '' = root.
                                      Omit to preserve existing parent on update.
   --workspace-id <uuid>              Defaults to the first workspace.
@@ -147,6 +155,10 @@ Common:
   --body '<json>'                   Inline body.
   --body @path/to/file              Read body from a file.
   --body-type json|form|urlencoded|raw|graphql
+
+Adopt (UI-created request with no external_key):
+  --id <uuid>                       Adopt the request with this uuid (from
+                                    \`vaxtly list requests\`) under --external-key.
 
 Folder placement:
   --folder-external-key <fk>        Place inside a folder.
@@ -186,6 +198,8 @@ Required:
   --name <n>               Display name (required on create).
 
 Optional:
+  --id <uuid>              Adopt an existing env (from \`vaxtly list envs\`)
+                           under --external-key. Prevents duplicates.
   --var 'KEY=value'        Repeatable. WARNING: replaces the whole array.
   --parent-external-key <pk>   Inherit from another env. '' = no parent.
   --workspace-id <uuid>    Defaults to the first workspace.

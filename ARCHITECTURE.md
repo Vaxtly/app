@@ -287,7 +287,7 @@ vaxtly/
 │   │   ├── cookie-jar.test.ts          # 24 tests: capture, domain/path/secure matching, expiry, RFC 6265 compliance
 │   │   ├── external-keys.test.ts       # 17 tests: external_key round-trip on all 4 entities, partial unique index, scope isolation
 │   │   ├── agent-socket.test.ts        # 5 tests: real socket + NDJSON framing + token rotation, ping
-│   │   ├── agent-socket-upsert.test.ts # 20 tests: all upsert methods + upsert.env_variable + auth gate
+│   │   ├── agent-socket-upsert.test.ts # 27 tests: all upsert methods + upsert.env_variable + adopt-by-id + auth gate
 │   │   ├── agent-socket-read.test.ts   # 11 tests: list/get + redaction tripwires for every sensitive field
 │   │   └── cli-smoke.test.ts           # 6 tests: compiled CLI binary — argv dispatch, exit codes, help
 │   └── e2e/
@@ -1368,6 +1368,8 @@ A loopback-only RPC server inside the main process so the bundled `vaxtly` CLI (
 | `upsert.env` | `(workspace_id, external_key)` | `parent_external_key` must exist; depth capped at 2 by env repo's `validateParent`. Passing `variables` REPLACES the array entirely (not a merge) — for single-var changes use `upsert.env_variable` |
 | `upsert.env_variable` | `(env_external_key, key)` | Single-var safe path: add or update ONE variable inside an existing env without disturbing the others. Necessary because reads redact values, so agents can't safely re-pass a full array |
 
+**Adoption (`id` param).** The four entity upserts (`collection`/`folder`/`request`/`env`) accept an optional `id`. Entities created in the UI have `external_key = NULL`, so a key-based upsert can't find them and would duplicate. Passing the entity's UUID (from the matching `list.*`) plus the desired `external_key` adopts the existing row: it's looked up by id, scope-checked (right workspace/collection), and its `external_key` is written so future key-based upserts resolve it. Refuses with `-32004` (conflict) if that key already belongs to a different row in the same scope. Shared logic in `_resolvers.ts → resolveUpsertTarget`.
+
 **Read (always redacted):**
 | Method | Returns |
 |--------|---------|
@@ -1397,7 +1399,7 @@ Centralizes "mutate → mark dirty" pairings so the agent-socket methods and the
 - `services/agent-socket/auth.ts` — token gen, dotfile read/write, `verifyToken`
 - `services/agent-socket/protocol.ts` — NDJSON framing + JSON-RPC envelope types + `LineBuffer`
 - `services/agent-socket/router.ts` — `registerMethod` / `dispatch` / `HandlerError`. Reads token from `req.auth` (envelope), not `req.params.auth`
-- `services/agent-socket/methods/_resolvers.ts` — translate external keys to UUIDs, with `HandlerError(NOT_FOUND)` on miss
+- `services/agent-socket/methods/_resolvers.ts` — translate external keys to UUIDs, with `HandlerError(NOT_FOUND)` on miss; `resolveUpsertTarget` handles key-based lookup vs `id`-based adoption
 - `services/agent-socket/methods/_redact.ts` — `redactAuthJson` + `redactVariablesJson`, called by every `get.*` handler before returning
 - `services/agent-socket/methods/{ping,upsert-collection,upsert-folder,upsert-request,upsert-env,upsert-env-variable}.ts`
 - `services/agent-socket/methods/list-{workspaces,collections,folders,requests,envs}.ts` — slim navigation shapes

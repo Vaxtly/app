@@ -81,6 +81,46 @@ export function resolveParentEnvId(
   return env.id
 }
 
+/**
+ * Resolve the target row for an idempotent upsert.
+ *
+ * Normal path (no `id`): look the row up by its external_key — the basis for
+ * idempotency. Returns undefined when nothing matches, signalling "create".
+ *
+ * Adoption path (`id` provided): the caller is claiming an existing row —
+ * typically one created in the UI with no external_key — and assigning it the
+ * given external_key. We look it up by UUID, confirm it lives in the expected
+ * scope, and refuse if that external_key is already taken by a different row.
+ * The caller writes `external_key` into its update payload to persist the link.
+ */
+export function resolveUpsertTarget<T extends { id: string }>(opts: {
+  id: unknown
+  externalKey: string
+  label: string
+  findById: (id: string) => T | undefined
+  findByExternalKey: (externalKey: string) => T | undefined
+  inScope: (row: T) => boolean
+}): T | undefined {
+  if (opts.id === undefined) {
+    return opts.findByExternalKey(opts.externalKey)
+  }
+  if (typeof opts.id !== 'string' || opts.id.length === 0) {
+    throw new HandlerError(ERR.VALIDATION, 'id must be a non-empty string when provided')
+  }
+  const row = opts.findById(opts.id)
+  if (!row || !opts.inScope(row)) {
+    throw new HandlerError(ERR.NOT_FOUND, `${opts.label} with id "${opts.id}" not found in this scope`)
+  }
+  const clash = opts.findByExternalKey(opts.externalKey)
+  if (clash && clash.id !== row.id) {
+    throw new HandlerError(
+      ERR.CONFLICT,
+      `external_key "${opts.externalKey}" is already used by another ${opts.label.toLowerCase()} in this scope`,
+    )
+  }
+  return row
+}
+
 export function requireString(value: unknown, field: string): string {
   if (typeof value !== 'string' || value.length === 0) {
     throw new HandlerError(ERR.VALIDATION, `${field} is required`)

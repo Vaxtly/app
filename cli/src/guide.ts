@@ -60,6 +60,24 @@ Pick descriptive slugs: \`users.list\`, \`auth.login\`, \`billing.checkout\`.
 Avoid UUIDs as external_keys — they don't survive the user renaming the
 underlying API and make the Vaxtly tree unreadable.
 
+## Updating something created in the UI (adopt by id)
+
+Entities the user created in the Vaxtly UI have NO external_key yet. If you
+upsert with a fresh external_key, you'll CREATE A DUPLICATE rather than
+update theirs. To update an existing UI-created entity:
+
+1. Find it with the matching \`list\` command — the output includes its \`id\`
+   (a UUID) and shows \`external_key\` as null:
+     vaxtly list collections
+2. Adopt it by passing that \`id\` plus the external_key you want to assign:
+     vaxtly upsert collection --id <uuid> --external-key acme --name "Acme"
+
+This claims the existing entity under \`acme\` (no duplicate). From then on
+use the external_key normally — the \`id\` is only needed for the one-time
+adoption. The same \`--id\` flag works on \`upsert folder\`, \`upsert request\`,
+and \`upsert env\`. Adoption fails if that external_key is already taken by a
+different entity in the same scope.
+
 ## Typical workflow
 
 ### "Add these endpoints to vaxtly" (fresh)

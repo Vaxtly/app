@@ -8,7 +8,7 @@
 import * as collectionsRepo from '../../../database/repositories/collections'
 import * as collectionsActions from '../../../actions/collections'
 import { registerMethod } from '../router'
-import { optionalString, requireString, resolveWorkspaceId } from './_resolvers'
+import { optionalString, requireString, resolveUpsertTarget, resolveWorkspaceId } from './_resolvers'
 
 export interface UpsertResult {
   id: string
@@ -23,10 +23,18 @@ export function registerUpsertCollection(): void {
     const externalKey = requireString(params.external_key, 'external_key')
     const description = optionalString(params.description, 'description')
 
-    const existing = collectionsRepo.findByExternalKey(workspaceId, externalKey)
+    const existing = resolveUpsertTarget({
+      id: params.id,
+      externalKey,
+      label: 'Collection',
+      findById: collectionsRepo.findById,
+      findByExternalKey: (k) => collectionsRepo.findByExternalKey(workspaceId, k),
+      inScope: (c) => c.workspace_id === workspaceId,
+    })
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = collectionsActions.updateCollection(existing.id, {
+        external_key: externalKey,
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
       })!

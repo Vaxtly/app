@@ -4,6 +4,8 @@ import { getString, type ParsedArgs } from '../argparse'
 
 export async function runUpsertCollection(args: ParsedArgs): Promise<void> {
   const params: Record<string, unknown> = {}
+  const id = getString(args, 'id')
+  if (id !== undefined) params.id = id
   const externalKey = getString(args, 'external-key')
   if (externalKey) params.external_key = externalKey
   const name = getString(args, 'name')

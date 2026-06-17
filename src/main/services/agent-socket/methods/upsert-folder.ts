@@ -14,6 +14,7 @@ import {
   requireString,
   resolveCollectionId,
   resolveParentFolderId,
+  resolveUpsertTarget,
   resolveWorkspaceId,
 } from './_resolvers'
 import type { UpsertResult } from './upsert-collection'
@@ -25,10 +26,18 @@ export function registerUpsertFolder(): void {
     const externalKey = requireString(params.external_key, 'external_key')
     const parentFolderId = resolveParentFolderId(collectionId, params.parent_folder_external_key)
 
-    const existing = foldersRepo.findByExternalKey(collectionId, externalKey)
+    const existing = resolveUpsertTarget({
+      id: params.id,
+      externalKey,
+      label: 'Folder',
+      findById: foldersRepo.findById,
+      findByExternalKey: (k) => foldersRepo.findByExternalKey(collectionId, k),
+      inScope: (f) => f.collection_id === collectionId,
+    })
     if (existing) {
       const name = optionalString(params.name, 'name')
       const updated = foldersActions.updateFolder(existing.id, {
+        external_key: externalKey,
         ...(name !== undefined && { name }),
         ...(parentFolderId !== undefined && { parent_id: parentFolderId }),
       })!

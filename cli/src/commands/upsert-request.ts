@@ -89,6 +89,8 @@ function assembleAuth(args: ParsedArgs): AuthConfig | undefined {
 
 export async function runUpsertRequest(args: ParsedArgs): Promise<void> {
   const params: Record<string, unknown> = {}
+  const id = getString(args, 'id')
+  if (id !== undefined) params.id = id
   const collectionKey = getString(args, 'collection-external-key')
   if (collectionKey) params.collection_external_key = collectionKey
   const externalKey = getString(args, 'external-key')

@@ -1,6 +1,6 @@
 {
   "name": "vaxtly",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Vaxtly API Client",
   "author": {
     "name": "Vaxtly",
@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "npm run build:cli && electron-vite build",
-    "build:cli": "tsc -p cli/tsconfig.json && node -e \"require('fs').chmodSync('cli/dist/index.js', 0o755)\"",
+    "typecheck:cli": "tsc -p cli/tsconfig.json --noEmit",
+    "build:cli": "npm run typecheck:cli && node -e \"require('fs').rmSync('cli/dist',{recursive:true,force:true})\" && esbuild cli/src/index.ts --bundle --platform=node --format=cjs --target=node18 --outfile=cli/dist/index.js && node -e \"require('fs').chmodSync('cli/dist/index.js', 0o755)\"",
     "preview": "electron-vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -37,6 +38,7 @@
     "electron": "^35.0.0",
     "electron-builder": "^26.0.0",
     "electron-vite": "^3.0.0",
+    "esbuild": "^0.25.12",
     "svelte": "^5.0.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",

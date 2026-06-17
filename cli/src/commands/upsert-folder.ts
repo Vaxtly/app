@@ -4,6 +4,8 @@ import { getString, getStringMaybeEmpty, type ParsedArgs } from '../argparse'
 
 export async function runUpsertFolder(args: ParsedArgs): Promise<void> {
   const params: Record<string, unknown> = {}
+  const id = getString(args, 'id')
+  if (id !== undefined) params.id = id
   const collectionKey = getString(args, 'collection-external-key')
   if (collectionKey) params.collection_external_key = collectionKey
   const externalKey = getString(args, 'external-key')

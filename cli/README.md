@@ -37,6 +37,13 @@ vaxtly upsert env       --external-key local --name Local \
 
 All upserts are idempotent on `--external-key`. Re-running updates the existing entity; omitted fields are preserved.
 
+To update an entity created in the UI (which has no `external_key` yet), adopt it: get its `id` from the matching `list` command, then pass `--id <uuid>` with the `--external-key` to assign — this claims the existing entity instead of creating a duplicate. Works on `upsert collection|folder|request|env`.
+
+```sh
+vaxtly list collections
+vaxtly upsert collection --id <uuid> --external-key acme --name "Acme API"
+```
+
 ## MCP mode
 
 ```
@@ -47,6 +54,12 @@ Speaks MCP over stdio. Wire it into Claude Desktop / Cursor / any MCP-capable ag
 
 ```json
 { "mcpServers": { "vaxtly": { "command": "vaxtly", "args": ["mcp"] } } }
+```
+
+For Claude Code, register it once at user scope (available in every project):
+
+```
+claude mcp add --scope user vaxtly -- vaxtly mcp
 ```
 
 The MCP tools (`vaxtly_upsert_collection`, `vaxtly_upsert_folder`, `vaxtly_upsert_request`, `vaxtly_upsert_env`, `vaxtly_ping`) accept the same parameters as the CLI verbs, with proper JSON Schemas so an agent picks them up cleanly.
