@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.11.5] - 2026-06-17
+
+### Fixed
+- **Changes made by AI agents through the CLI or MCP now appear in the app instantly.** A `vaxtly upsert` (or `vaxtly_upsert_*` MCP tool) wrote correctly to the database, but the affected collection, folder, request, or environment didn't show up until the app was restarted. The impacted view now refreshes live as soon as the write commits — no restart or manual reload needed
+
 ## [0.11.4] - 2026-06-16
 
 ### Added
