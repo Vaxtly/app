@@ -123,6 +123,7 @@ vaxtly/
 │   │   │       ├── auth.ts           # 32-byte token, dotfile at ~/.vaxtly/cli.json (0600), verifyToken
 │   │   │       ├── protocol.ts       # NDJSON framing, JSON-RPC 2.0 envelopes, LineBuffer, ERR codes
 │   │   │       ├── router.ts         # registerMethod / dispatch / HandlerError; reads token from envelope (req.auth)
+│   │   │       ├── notifier.ts        # broadcasts agent:data-changed push after a write (live UI refresh)
 │   │   │       └── methods/
 │   │   │           ├── _resolvers.ts        # resolveWorkspaceId / resolveCollectionId / resolveFolderId / resolveParentEnvId
 │   │   │           ├── _redact.ts           # redactAuthJson + redactVariablesJson — unconditional, used by every get.*
@@ -639,6 +640,7 @@ Pattern: `ipcMain.handle('domain:action', handler)` in main, `ipcRenderer.invoke
 | `gql-sub:status-changed` | — (main→renderer push) | — | `api.on.gqlSubStatusChanged(cb)` |
 | `gql-sub:event` | — (main→renderer push) | — | `api.on.gqlSubEvent(cb)` |
 | `clipboard:text` | — (main→renderer push on BrowserWindow focus) | — | `api.on.clipboardText(cb)` |
+| `agent:data-changed` | — (main→renderer push after a CLI/MCP agent-socket upsert) | — | `api.on.agentDataChanged(cb)` |
 
 **Menu channels** (main→renderer push via `IPC.*` constants, not request/response):
 `menu:new-request`, `menu:save-request`, `menu:open-settings`, `menu:open-manual`, `menu:check-updates`
@@ -1386,6 +1388,9 @@ A loopback-only RPC server inside the main process so the bundled `vaxtly` CLI (
 
 External keys live on a new column (`external_key TEXT`) on each table with partial unique indexes (`WHERE external_key IS NOT NULL`). Multiple NULLs allowed; uniqueness enforced only on the populated set.
 
+### Live UI Refresh
+The renderer caches collections/folders/requests/envs in module-level `$state` loaded once via `loadAll()`, so out-of-band writes over the socket would otherwise be invisible until an app restart. After a successful upsert commits, each write method calls `notifyAgentDataChanged({ workspaceId, kind })` (`services/agent-socket/notifier.ts`), which broadcasts the `agent:data-changed` push to every renderer window via `BrowserWindow.getAllWindows()` — the same broadcast pattern as `session-log` / `websocket-client`. `App.svelte` subscribes via `api.on.agentDataChanged`, filters to the active workspace, and coalesces bursts (an MCP run fires many upserts) into a single debounced reload: `kind: 'env'` → `environmentsStore.loadAll()`, all other kinds → `collectionsStore.loadAll()`. The push fires only on the agent-socket path; UI-originated IPC mutations already self-update their stores, so there is no double reload.
+
 ### Actions Layer (`src/main/actions/`)
 Centralizes "mutate → mark dirty" pairings so the agent-socket methods and the existing IPC handlers stay aligned. `actions/requests.ts` wraps `requestsRepo.{create,update,delete,move,reorder}` with `collectionsRepo.markDirty()`; other domains pass through. Both surfaces call the same actions function — adding new sync/audit side effects only needs to be done once.
 
@@ -1401,6 +1406,7 @@ Centralizes "mutate → mark dirty" pairings so the agent-socket methods and the
 - `services/agent-socket/router.ts` — `registerMethod` / `dispatch` / `HandlerError`. Reads token from `req.auth` (envelope), not `req.params.auth`
 - `services/agent-socket/methods/_resolvers.ts` — translate external keys to UUIDs, with `HandlerError(NOT_FOUND)` on miss; `resolveUpsertTarget` handles key-based lookup vs `id`-based adoption
 - `services/agent-socket/methods/_redact.ts` — `redactAuthJson` + `redactVariablesJson`, called by every `get.*` handler before returning
+- `services/agent-socket/notifier.ts` — `notifyAgentDataChanged`, broadcasts the `agent:data-changed` push to renderer windows after a write commits (live UI refresh)
 - `services/agent-socket/methods/{ping,upsert-collection,upsert-folder,upsert-request,upsert-env,upsert-env-variable}.ts`
 - `services/agent-socket/methods/list-{workspaces,collections,folders,requests,envs}.ts` — slim navigation shapes
 - `services/agent-socket/methods/get-{collection,folder,request,env}.ts` — full entity with sensitive fields redacted
