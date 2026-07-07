@@ -48,6 +48,7 @@
     PUT: 'var(--color-method-put)',
     PATCH: 'var(--color-method-patch)',
     DELETE: 'var(--color-method-delete)',
+    QUERY: 'var(--color-method-query)',
     HEAD: 'var(--color-method-head)',
     OPTIONS: 'var(--color-method-options)',
   }

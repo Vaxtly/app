@@ -149,6 +149,7 @@ html.light {
   --color-method-put: #2563eb;
   --color-method-patch: #ea580c;
   --color-method-delete: #dc2626;
+  --color-method-query: #65a30d;
   --color-method-head: #9333ea;
   --color-method-options: #64748b;
   --color-method-list: #d97706;
@@ -251,6 +252,7 @@ html.light {
   --color-method-put: #818cf8;
   --color-method-patch: #fb923c;
   --color-method-delete: #fb7185;
+  --color-method-query: #a3e635;
   --color-method-head: #c084fc;
   --color-method-options: #94a3b8;
   --color-method-list: #fbbf24;

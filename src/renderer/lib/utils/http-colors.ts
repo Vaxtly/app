@@ -4,6 +4,7 @@ const METHOD_KEYS: Record<string, string> = {
   PUT: 'put',
   PATCH: 'patch',
   DELETE: 'delete',
+  QUERY: 'query',
   HEAD: 'head',
   OPTIONS: 'options',
   LIST: 'list',

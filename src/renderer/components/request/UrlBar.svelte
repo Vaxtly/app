@@ -310,6 +310,7 @@
   .method-led.PUT { background: var(--color-method-put); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-put) 40%, transparent); }
   .method-led.PATCH { background: var(--color-method-patch); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-patch) 40%, transparent); }
   .method-led.DELETE { background: var(--color-method-delete); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-delete) 50%, transparent); }
+  .method-led.QUERY { background: var(--color-method-query); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-query) 40%, transparent); }
   .method-led.HEAD { background: var(--color-method-head); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-head) 40%, transparent); }
   .method-led.OPTIONS { background: var(--color-method-options); box-shadow: none; }
   .method-led.LIST { background: var(--color-method-list); box-shadow: 0 0 6px color-mix(in srgb, var(--color-method-list) 40%, transparent); }
