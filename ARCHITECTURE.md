@@ -748,7 +748,7 @@ interface GqlSubStatusChanged { requestId, status, error? }
 ### `constants.ts`
 
 ```typescript
-HTTP_METHODS = ['GET','POST','PUT','PATCH','DELETE','HEAD','OPTIONS'] as const
+HTTP_METHODS = ['GET','POST','PUT','PATCH','DELETE','QUERY','HEAD','OPTIONS','LIST'] as const
 BODY_TYPES = ['none','json','xml','form-data','urlencoded','raw','graphql'] as const
 AUTH_TYPES = ['inherit','none','bearer','basic','api-key','oauth2'] as const
 SENSITIVE_HEADERS = ['authorization','x-api-key','cookie','set-cookie', ...]
@@ -1255,6 +1255,7 @@ All method colors are theme-aware via `--color-method-*` CSS variables. Componen
 | PUT | `#60a5fa` | `#2563eb` | `--color-method-put` |
 | PATCH | `#fb923c` | `#ea580c` | `--color-method-patch` |
 | DELETE | `#f87171` | `#dc2626` | `--color-method-delete` |
+| QUERY | `#a3e635` | `#65a30d` | `--color-method-query` |
 | HEAD | `#c084fc` | `#9333ea` | `--color-method-head` |
 | OPTIONS | `#94a3b8` | `#64748b` | `--color-method-options` |
 | LIST | `#fbbf24` | `#d97706` | `--color-method-list` |
