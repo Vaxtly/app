@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-07-07
+
+### Changed
+- **Redesigned the Environments tab in collection/folder settings.** Rows are now cards with a brand-tinted selected state, an animated checkbox, and an always-visible star + `DEFAULT` badge on selected rows (previously the star only appeared on hover). The default environment is now sorted to the top, followed by selected environments, with a smooth reorder animation
+
 ## [0.12.0] - 2026-07-06
 
 ### Added
