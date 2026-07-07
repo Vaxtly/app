@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-07-06
+
+### Added
+- **QUERY HTTP method support** ([RFC 10008](https://www.rfc-editor.org/rfc/rfc10008)). The new safe, idempotent method that carries the query in the request body is now a preset in the method selector, color-coded like the other verbs. Request bodies are sent with QUERY just like POST
+
 ## [0.11.5] - 2026-06-17
 
 ### Fixed
